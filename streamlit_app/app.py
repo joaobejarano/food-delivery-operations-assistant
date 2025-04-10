@@ -1,6 +1,12 @@
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+
+from src.forecasting import get_demand_series_by_region, train_prophet_model
 
 # Load data
 @st.cache_data
@@ -43,7 +49,7 @@ col2.metric("Avg Delivery Time", f"{filtered_orders['delivery_duration'].mean():
 col3.metric("Avg Order Value", f"${filtered_orders['total_amount'].mean():.2f}")
 col4.metric("Incidents (Total)", len(incidents[incidents['order_id'].isin(filtered_orders['order_id'])]))
 
-# Orders over time
+# Orders per Day
 st.subheader("📅 Orders per Day")
 orders_by_day = filtered_orders.copy()
 orders_by_day['day'] = orders_by_day['order_time'].dt.date
@@ -56,7 +62,6 @@ st.subheader("📍 Orders by Region")
 region_data = filtered_orders['region'].value_counts().reset_index()
 region_data.columns = ['Region', 'Orders']
 fig_region = px.bar(region_data, x='Region', y='Orders', title="Orders by Region")
-
 st.plotly_chart(fig_region, use_container_width=True)
 
 # Avg Delivery Time by Region
@@ -80,6 +85,39 @@ incident_counts.columns = ['Incident Type', 'Count']
 fig_incidents = px.bar(incident_counts, x='Incident Type', y='Count', title="Reported Incidents")
 st.plotly_chart(fig_incidents, use_container_width=True)
 
-# Data preview
+# 📈 Demand Forecast
+st.subheader("📈 Forecast Demand per Region")
+
+region_to_forecast = st.selectbox("Select Region to Forecast", options=orders['region'].unique())
+
+if st.button("Generate Forecast"):
+    st.write(f"🔮 Forecasting demand for: **{region_to_forecast}**")
+    
+    df_region = get_demand_series_by_region(orders, region_to_forecast)
+
+    # ✅ Verificações de segurança antes de treinar
+    if df_region.empty:
+        st.warning("⚠️ No data available for this region.")
+    elif df_region['y'].isnull().any():
+        st.warning("⚠️ Found null values in the series. Please clean the data.")
+    elif df_region['y'].nunique() < 2:
+        st.warning("⚠️ Not enough variation in data to train a forecast model.")
+    elif len(df_region) < 10:
+        st.warning("⚠️ Not enough data points to forecast.")
+    else:
+        try:
+            forecast, model = train_prophet_model(df_region, periods=24)
+            forecast_to_plot = forecast[['ds', 'yhat']].rename(columns={'ds': 'Datetime', 'yhat': 'Predicted Orders'})
+            fig_forecast = px.line(forecast_to_plot, x='Datetime', y='Predicted Orders',
+                                title=f"📈 Predicted Demand - Next 24 Hours - {region_to_forecast}")
+            st.plotly_chart(fig_forecast, use_container_width=True)
+
+            if model is None:
+                st.warning("⚠️ Prophet failed — using simple moving average as fallback.")
+        except Exception as e:
+            st.error(f"❌ Prophet failed: {e}")
+
+        
+# Sample data
 st.subheader("📄 Sample of Filtered Orders")
 st.dataframe(filtered_orders.sample(min(10, len(filtered_orders))))
