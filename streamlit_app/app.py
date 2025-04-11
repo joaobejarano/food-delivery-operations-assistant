@@ -1,7 +1,12 @@
+import torch
+try:
+    torch._classes = None
+except Exception:
+    pass
+
 import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -121,3 +126,26 @@ if st.button("Generate Forecast"):
 # Sample data
 st.subheader("📄 Sample of Filtered Orders")
 st.dataframe(filtered_orders.sample(min(10, len(filtered_orders))))
+
+st.subheader("🤖 Incident Assistant (RAG + GPT)")
+
+with st.expander("📘 Exemplo de perguntas"):
+    st.markdown("""
+    - Como lidar com atrasos por chuva?
+    - O que fazer se o entregador não aparecer?
+    - Qual solução aplicar quando há muitos cancelamentos?
+    """)
+
+user_question = st.text_area("Digite sua pergunta sobre operações logísticas ou incidentes:")
+
+if st.button("Consultar"):
+    if user_question.strip() == "":
+        st.warning("Digite uma pergunta antes de consultar.")
+    else:
+        with st.spinner("Consultando base de incidentes e gerando resposta com IA..."):
+            try:
+                from src.rag.qa import answer_question
+                resposta = answer_question(user_question)
+                st.success(resposta)
+            except Exception as e:
+                st.error(f"❌ Erro ao consultar o assistente: {e}")

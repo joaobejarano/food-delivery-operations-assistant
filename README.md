@@ -41,3 +41,29 @@ smart-ops-assistant-food-delivery/
 ├── src/                 # Core logic: RAG, GPT, forecasting
 ├── streamlit_app/       # Frontend app
 ├── notebooks/           # Data exploration and experimentation
+```
+
+## ⚙️ How to run the project
+
+1. Create your virtual environment and install the dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+2. Create a .env from .env.example and add your OpenAI key:
+
+```bash
+OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+3. Ingest the incidents (generates the semantic vectors):
+
+```bash
+python src/rag/ingest.py
+```
+
+4. Run the application:
+
+```bash
+streamlit run streamlit_app/app.py --server.runOnSave false
+```
