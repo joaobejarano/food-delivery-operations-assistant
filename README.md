@@ -44,7 +44,7 @@ smart-ops-assistant-food-delivery/
 │   └── rag/
 │       ├── ingest.py      # Vector ingestion (ChromaDB)
 │       ├── qa.py          # RAG-powered Q&A with GPT
-│       └── gpt_insights.py# GPT-4 insight generator
+│       └── gpt_insights.py # GPT-4 insight generator
 ├── streamlit_app/
 │   └── app.py             # Streamlit UI
 ├── .env.example           # Example of environment config
