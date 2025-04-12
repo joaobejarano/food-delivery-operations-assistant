@@ -26,14 +26,21 @@ def generate_operational_insight(incident_df: pd.DataFrame, region: str = None) 
         context += f" in the region(s) of **{region}**"
 
     prompt = f"""
-{context}:
+            You are a senior operations consultant analyzing recent delivery incidents.
 
-{incident_summary}
+            The following are the most frequent incident types:
+            {incident_summary}
 
-Based on this data, provide a **clear and practical suggestion** for the delivery operations manager.
-The suggestion should be concise, data-driven, and follow logistics best practices.
-Avoid generic answers and tailor it to the situation.
-"""
+            Context: These incidents were recorded in the delivery system{f" for the region(s): {region}" if region else ""}.
+
+            🎯 Your task:
+            - Write a **clear, data-driven recommendation** for the delivery operations manager.
+            - Suggest **actionable next steps** or process improvements.
+            - Consider patterns or operational risks based on the types of incidents.
+
+            Be specific. Avoid generalities like "improve processes" or "invest in training".
+            Respond in bullet points if applicable.
+        """
 
     try:
         response = client.chat.completions.create(

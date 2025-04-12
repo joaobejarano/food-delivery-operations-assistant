@@ -152,12 +152,20 @@ if st.button("Query"):
                 st.error(f"❌ Error querying the assistant: {e}")
 
 
-st.subheader("💡 Smart Suggestion for Manager")
+st.subheader("📍 Manager Insight (Powered by GPT-4)")
 
 if not filtered_incidents.empty:
-    if st.button("Generate suggestion with AI"):
-        with st.spinner("Generating suggestion with GPT-4..."):
-            suggestion = generate_operational_insight(filtered_incidents, region=", ".join(regions))
-            st.success(suggestion)
-    else:
-        st.info("No incidents filtered to generate suggestion.")
+    if st.button("Generate AI Recommendation"):
+        with st.spinner("Analyzing incidents and generating recommendation..."):
+            insight = generate_operational_insight(filtered_incidents, region=", ".join(regions))
+            st.markdown("### 📋 Recommended Action")
+            st.markdown(
+                f"""
+                <div style="background-color: #f0f8ff; padding: 1rem; border-radius: 10px; border: 1px solid #ddd;">
+                    {insight}
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+else:
+    st.info("No incidents found in the current filter to generate recommendations.")
