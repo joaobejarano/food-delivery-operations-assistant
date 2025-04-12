@@ -155,17 +155,16 @@ if st.button("Query"):
 st.subheader("📍 Manager Insight (Powered by GPT-4)")
 
 if not filtered_incidents.empty:
-    if st.button("Generate AI Recommendation"):
-        with st.spinner("Analyzing incidents and generating recommendation..."):
-            insight = generate_operational_insight(filtered_incidents, region=", ".join(regions))
-            st.markdown("### 📋 Recommended Action")
-            st.markdown(
-                f"""
-                <div style="background-color: #f0f8ff; padding: 1rem; border-radius: 10px; border: 1px solid #ddd;">
-                    {insight}
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
+    with st.spinner("Generating AI-powered recommendation..."):
+        insight = generate_operational_insight(filtered_incidents, region=", ".join(regions))
+        st.markdown("### 📋 Recommended Action")
+        st.markdown(
+            f"""
+            <div style="background-color: #f0f8ff; padding: 1rem; border-radius: 10px; border: 1px solid #ddd;">
+                {insight}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 else:
     st.info("No incidents found in the current filter to generate recommendations.")
