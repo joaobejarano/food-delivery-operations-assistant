@@ -12,23 +12,24 @@ Support logistics and operations teams in **making fast, informed decisions** us
 
 ## 🧠 Tech Stack & Concepts
 
-- Python + Pandas + Faker (simulated realistic data)
-- **Streamlit** (interactive dashboard)
-- **LangChain + ChromaDB** (RAG pipeline for contextual retrieval)
-- **OpenAI GPT-4** (generating actionable suggestions)
-- **Hugging Face Transformers** (embeddings)
-- **Prophet** or **XGBoost** (time series forecasting)
-- **Plotly** (data visualization)
+- **Python**, **Pandas**, **Faker** – realistic simulated datasets
+- **Streamlit** – visual dashboard
+- **LangChain + ChromaDB** – RAG for contextual search
+- **OpenAI GPT-4** – generates insights based on incidents
+- **Hugging Face Transformers** or **OpenAI Embeddings**
+- **Prophet** or **XGBoost** – demand forecasting
+- **Plotly** – interactive charts and visualizations
 
 ---
 
 ## ⚙️ Features
 
-- 📦 View operational data: orders, delivery times, courier load, etc.
-- 📈 Predict demand by hour and region
-- 🧠 Generate GPT-4 insights based on retrieved context
-- 🔍 Retrieve similar past operational incidents using RAG
-- ☁️ Streamlit-powered visual interface
+- 📦 Explore operational metrics: delivery times, regions, ratings, etc.
+- 📈 Predict hourly demand per region (Prophet with fallback)
+- 🧠 Generate AI-powered recommendations for managers
+- 🔎 Retrieve and summarize past incidents using RAG
+- ✅ Fully interactive dashboard built with Streamlit
+- 💡 GPT-generated insights rendered in real time
 
 ---
 
@@ -36,11 +37,18 @@ Support logistics and operations teams in **making fast, informed decisions** us
 
 ```bash
 smart-ops-assistant-food-delivery/
-│
-├── data/                # Simulated datasets
-├── src/                 # Core logic: RAG, GPT, forecasting
-├── streamlit_app/       # Frontend app
-├── notebooks/           # Data exploration and experimentation
+├── data/                  # Simulated .csv datasets
+├── notebooks/             # Exploratory notebooks and analysis
+├── src/
+│   ├── forecasting.py     # Forecast logic (Prophet)
+│   └── rag/
+│       ├── ingest.py      # Vector ingestion (ChromaDB)
+│       ├── qa.py          # RAG-powered Q&A with GPT
+│       └── gpt_insights.py# GPT-4 insight generator
+├── streamlit_app/
+│   └── app.py             # Streamlit UI
+├── .env.example           # Example of environment config
+└── README.md              # Project overview
 ```
 
 ## ⚙️ How to run the project
