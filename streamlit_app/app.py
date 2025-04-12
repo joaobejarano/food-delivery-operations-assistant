@@ -12,6 +12,8 @@ import pandas as pd
 import plotly.express as px
 
 from src.forecasting import get_demand_series_by_region, train_prophet_model
+from src.rag.qa import answer_question
+from src.rag.gpt_insights import generate_operational_insight
 
 # Load data
 @st.cache_data
@@ -129,23 +131,33 @@ st.dataframe(filtered_orders.sample(min(10, len(filtered_orders))))
 
 st.subheader("🤖 Incident Assistant (RAG + GPT)")
 
-with st.expander("📘 Exemplo de perguntas"):
+with st.expander("📘 Example questions"):
     st.markdown("""
-    - Como lidar com atrasos por chuva?
-    - O que fazer se o entregador não aparecer?
-    - Qual solução aplicar quando há muitos cancelamentos?
+    - How to deal with rain delays?
+    - What to do if the delivery person doesn't show up?
+    - What solution to apply when there are many cancellations?
     """)
 
-user_question = st.text_area("Digite sua pergunta sobre operações logísticas ou incidentes:")
+user_question = st.text_area("Enter your question about logistics operations or incidents:")
 
-if st.button("Consultar"):
+if st.button("Query"):
     if user_question.strip() == "":
-        st.warning("Digite uma pergunta antes de consultar.")
+        st.warning("Enter a question before querying.")
     else:
-        with st.spinner("Consultando base de incidentes e gerando resposta com IA..."):
-            try:
-                from src.rag.qa import answer_question
-                resposta = answer_question(user_question)
-                st.success(resposta)
+        with st.spinner("Querying incident database and generating response with AI..."):
+            try:            
+                answer = answer_question(user_question)
+                st.success(answer)
             except Exception as e:
-                st.error(f"❌ Erro ao consultar o assistente: {e}")
+                st.error(f"❌ Error querying the assistant: {e}")
+
+
+st.subheader("💡 Smart Suggestion for Manager")
+
+if not filtered_incidents.empty:
+    if st.button("Generate suggestion with AI"):
+        with st.spinner("Generating suggestion with GPT-4..."):
+            suggestion = generate_operational_insight(filtered_incidents, region=", ".join(regions))
+            st.success(suggestion)
+    else:
+        st.info("No incidents filtered to generate suggestion.")
